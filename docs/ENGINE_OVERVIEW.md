@@ -300,5 +300,5 @@ MIT License (or as specified)
 
 ## Contributing
 
-This is an extracted engine core. For strategy development, see `../strategy_v2026/`.
+This is a standalone, strategy-agnostic backtesting engine. For strategy development, create your own strategy modules externally and integrate them with the engine.
 

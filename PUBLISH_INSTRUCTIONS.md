@@ -33,7 +33,8 @@ After creating the repository, run one of the following:
 Replace `YOUR_USERNAME` with your GitHub username:
 
 ```powershell
-cd C:\Users\Metin\Downloads\hand_off_pack_v2025-11-11\engine_core
+# Navigate to your engine_core directory
+cd /path/to/engine_core
 
 # Add remote
 git remote add origin https://github.com/YOUR_USERNAME/crypto-perps-backtest-engine.git
@@ -77,7 +78,7 @@ After publishing, verify the repository:
 To verify the repository works from a fresh clone:
 
 ```powershell
-cd C:\Users\Metin\Downloads
+# Clone to a test directory
 git clone https://github.com/YOUR_USERNAME/crypto-perps-backtest-engine.git engine_core_test
 cd engine_core_test
 pip install -r requirements.txt
