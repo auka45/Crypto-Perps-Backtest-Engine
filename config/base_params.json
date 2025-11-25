@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "spec_version": "ENGINE_CORE_V0",
+    "generated_on": "2025-11-23"
+  },
+  "cost_model": {
+    "enabled": true
+  },
+  "general": {
+    "debug_invariants": false,
+    "oracle_mode": null,
+    "oracle_random_seed": 42,
+    "debug_oracle_flow": false,
+    "venue": "BINANCE_USDS_M_FUTURES",
+    "initial_capital_usd": 100000,
+    "max_positions": {
+      "default": 5,
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "tunable": false
+    },
+    "r_base": {
+      "default": 0.0075,
+      "min": 0.001,
+      "max": 0.02,
+      "step": 0.0001,
+      "tunable": true
+    },
+    "maker_fee_bps": {
+      "default": 2.0,
+      "min": 0.0,
+      "max": 3.0,
+      "step": 0.1,
+      "tunable": false
+    },
+    "taker_fee_bps": {
+      "default": 4.0,
+      "min": 0.0,
+      "max": 6.0,
+      "step": 0.1,
+      "tunable": false
+    },
+    "funding_throttle_minutes": {
+      "default": 15,
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "tunable": false
+    },
+    "stale_order_bars": {
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "tunable": false
+    }
+  },
+  "universe": {
+    "initial": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT",
+      "SOLUSDT",
+      "XRPUSDT",
+      "ADAUSDT",
+      "DOGEUSDT",
+      "AVAXUSDT",
+      "LINKUSDT",
+      "AAVEUSDT"
+    ],
+    "refresh_days": {
+      "default": 7,
+      "min": 7,
+      "max": 14,
+      "step": 1,
+      "tunable": false
+    },
+    "include_thresholds": {
+      "open_interest_min_usd": 10000000,
+      "adv60_min_usd": 30000000
+    },
+    "drop_rules": {
+      "consecutive_days": 3,
+      "oi_min_usd": 10000000,
+      "adv60_min_usd": 30000000,
+      "median_spread_bps_7d_max": 15
+    },
+    "readd_days": 14,
+    "memecoin_cap": 1
+  },
+  "sizing": {
+    "vol_mad_days": 30,
+    "vol_ewma_lambda": 0.995,
+    "vol_fast_median_days": 30,
+    "size_mult_min": 0.3,
+    "size_mult_max": 1.0,
+    "jump_sigma_mult": 3.0,
+    "jump_lookback_bars": 6,
+    "momentum_safeguard_slopez": 2.0,
+    "momentum_min_size_mult": 0.6,
+    "avwap_drift_base_bps": 10.0,
+    "long_only": false,
+    "short_only": false
+  },
+  "slippage_costs": {
+    "base_slip_bps_intercept": 2.0,
+    "base_slip_bps_slope_per_participation": 20.0,
+    "thin_adder_bps": 15.0,
+    "vacuum_entry_blocked": true,
+    "partial_fill_extra_slip_cap_bps": 8.0,
+    "participation_cap_normal": 0.01,
+    "participation_cap_thin": 0.001
+  },
+  "liquidity_regimes": {
+    "vacuum_spread_enter_bps": 50.0,
+    "vacuum_spread_exit_bps": 30.0,
+    "vacuum_depth_enter_frac": 0.1,
+    "vacuum_depth_exit_frac": 0.2,
+    "vacuum_dwell_exit_bars": 3,
+    "thin_seasonal_z_enter": 3.0,
+    "thin_seasonal_depth_pct_enter": 10.0,
+    "seasonal_profile_recalc_hour_utc": 0,
+    "seasonal_profile_window_days": 30,
+    "seasonal_profile_padding_days": 7
+  },
+  "beta_controls": {
+    "lambda_slow": 0.999,
+    "lambda_fast": 0.97,
+    "shrinkage_prior_weight": 0.1,
+    "cap_net_beta_abs": 1.2,
+    "cap_gross_beta": 3.0,
+    "rho_floor_btc_alt": 0.9,
+    "rho_floor_cross_alt": 0.75,
+    "high_vol_m_threshold": 0.5
+  },
+  "es_guardrails": {
+    "ewhs_confidence": 0.99,
+    "ewhs_lambda": 0.985,
+    "parametric_vol_lambda": 0.985,
+    "parametric_corr_lambda": 0.999,
+    "sigma_clip_k_max": 4.5,
+    "sigma_clip_k_min": 3.0,
+    "es_cap_of_equity": 0.0225
+  },
+  "margin": {
+    "block_new_entries_ratio_pct": 60.0,
+    "trim_target_ratio_pct": 50.0,
+    "flatten_ratio_pct": 80.0,
+    "max_trim_count": 3,
+    "trim_flatten_on_fail": true
+  },
+  "loss_halts": {
+    "daily_hard_stop_pct": -0.025,
+    "soft_brake_intraday_pct": -0.015,
+    "per_symbol_daily_cap_pct": -0.008,
+    "drawdown_ladder": [
+      {
+        "dd_threshold_pct": -0.1,
+        "size_mult": 0.5,
+        "halt": false
+      },
+      {
+        "dd_threshold_pct": -0.2,
+        "size_mult": 0.1,
+        "halt": true
+      }
+    ]
+  },
+  "risk": {
+    "limits": {
+      "min_margin_ratio_pct": 9.0,
+      "max_es_pct": 2.25,
+      "max_notional_usd": null
+    },
+    "kill_switch": {
+      "max_daily_loss_pct": 2.5,
+      "max_daily_loss_usd": 2500.0,
+      "flatten_on_trigger": true,
+      "block_new_entries": true,
+      "reset_time": "00:00:00"
+    },
+    "beta": {
+      "max_symbol_beta": 1.5,
+      "max_portfolio_beta": 3.0,
+      "reference_symbol": "BTCUSDT"
+    }
+  },
+  "engine": {
+    "allow_neutral_only_mode": true,
+    "state_persistence_path": "runs/{run_name}/engine_state.json"
+  },
+  "orderbook": {
+    "depth_levels_sum": 5,
+    "snapshot_interval_s": 0.5,
+    "snapshot_window_centered_s": 30
+  },
+  "rates_limits": {
+    "warn_utilization_pct_per_min": 70.0,
+    "pause_seconds_on_429": 60
+  }
+}
+

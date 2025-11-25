@@ -1,0 +1,7 @@
+{
+  "general": {
+    "oracle_mode": "always_long",
+    "oracle_random_seed": 42
+  }
+}
+
