@@ -367,10 +367,10 @@ The `engine_core/` package is a **standalone, strategy-agnostic backtesting engi
 - Validation harness (Oracle module, baselines, parity checks)
 - Comprehensive documentation
 
-**Relationship to Parent Repo:**
-- `engine_core/`: Standalone engine (this package)
-- `strategy_v2026/`: Strategy-specific logic (separate package)
-- `data/`: Market data (external dependency)
+**Repository Structure:**
+- This is a **standalone engine package** with no dependencies on parent repositories
+- Strategy-specific logic should be developed in separate packages/modules
+- Market data is an external dependency (users provide their own data)
 
 ### 6.2 Intended Purpose
 
