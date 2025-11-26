@@ -39,6 +39,7 @@ wheels/
 
 # Test coverage
 .coverage
+coverage_report.txt
 htmlcov/
 .pytest_cache/
 
