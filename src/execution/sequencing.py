@@ -7,7 +7,7 @@ import pandas as pd
 @dataclass
 class OrderEvent:
     """Order event for sequencing"""
-    event_type: Literal['STOP', 'SQUEEZE_ENTRY', 'TREND_ENTRY', 'RANGE_ENTRY', 'SQUEEZE_NEW', 'NEUTRAL_ENTRY', 'TRAIL', 'TTL', 'STALE_CANCEL']
+    event_type: Literal['STOP', 'ORACLE_ENTRY', 'TRAIL', 'TTL', 'STALE_CANCEL']
     symbol: str
     module: str
     priority: int  # Lower = higher priority
@@ -29,22 +29,17 @@ class EventSequencer:
         """
         Sequence events in correct order.
         
-        Order:
-        1. Stops first for non-SQUEEZE (adverse_first)
-        2. SQUEEZE module (entry_first)
-        3. New entries in fixed order: TREND → RANGE → SQUEEZE → NEUTRAL_Probe
-        4. Trails: tighten only
-        5. TTL/Expiry: SQUEEZE expires after 48 bars
-        6. Stale: unfilled entries aged > 3 bars → cancel
+        Order (Model-1):
+        1. Stops first (adverse_first)
+        2. New entries (ORACLE_ENTRY only)
+        3. Trails: tighten only
+        4. TTL/Expiry: generic TTL handling
+        5. Stale: unfilled entries aged > 3 bars → cancel
         """
         # Define priority mapping
         priority_map = {
             'STOP': 1,
-            'SQUEEZE_ENTRY': 2,
-            'TREND_ENTRY': 3,
-            'RANGE_ENTRY': 4,
-            'SQUEEZE_NEW': 5,
-            'NEUTRAL_ENTRY': 6,
+            'ORACLE_ENTRY': 2,
             'TRAIL': 7,
             'TTL': 8,
             'STALE_CANCEL': 9

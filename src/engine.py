@@ -845,17 +845,10 @@ class BacktestEngine:
         # Collect all events for this symbol
         events = []
         
-        # 1. Stops first for non-SQUEEZE (adverse_first)
+        # 1. Stops first (adverse_first)
         events.extend(self.collect_stop_events(symbol, fill_bar, fill_ts))
         
-        # 1b. SQUEEZE TP1 exits (same priority as stops)
-        events.extend(self.collect_squeeze_tp1_events(symbol, fill_bar, fill_ts))
-        
-        # 2. SQUEEZE module (entry_first)
-        if not funding_window['disable_squeeze']:
-            events.extend(self.collect_squeeze_entry_events(symbol, fill_bar, fill_ts))
-        
-        # 3. New entries in fixed order: TREND → RANGE → SQUEEZE → NEUTRAL_Probe
+        # 2. New entries (ORACLE signals only in Model-1)
         # ORACLE signals bypass funding window blocks
         oracle_mode = self.params.get('general', 'oracle_mode')
         if not funding_window['block_entries'] or oracle_mode:
@@ -869,19 +862,13 @@ class BacktestEngine:
                 print(f"WARNING: Error collecting new entry events for {symbol}: {e}")
                 # Continue without new entry events
         
-        # 4. Trails: tighten only
+        # 3. Trails: tighten only
         events.extend(self.collect_trail_events(symbol, fill_bar, fill_ts))
         
-        # 4b. RANGE time stops (20 bars)
-        events.extend(self.collect_range_time_stops(symbol, fill_idx, fill_ts))
-        
-        # 4c. SQUEEZE volatility expansion exits (after trails, before TTL)
-        events.extend(self.collect_squeeze_vol_exit_events(symbol, fill_bar, fill_ts, fill_idx))
-        
-        # 5. TTL/Expiry: SQUEEZE expires after 48 bars
+        # 4. TTL/Expiry: generic TTL handling
         events.extend(self.collect_ttl_events(symbol, fill_idx, fill_ts))
         
-        # 6. Stale: unfilled entries aged > 3 bars → cancel
+        # 5. Stale: unfilled entries aged > 3 bars → cancel
         events.extend(self.collect_stale_events(symbol, fill_idx, fill_ts))
         
         # Sequence and execute events
@@ -2023,7 +2010,7 @@ class BacktestEngine:
         self, symbol: str, signal_idx: int, fill_idx: int, fill_bar: pd.Series,
         fill_ts: pd.Timestamp, funding_window: Dict
     ) -> List[OrderEvent]:
-        """Collect new entry events in order: TREND → RANGE → SQUEEZE → NEUTRAL_Probe"""
+        """Collect new entry events (ORACLE signals only in Model-1)"""
         # Collect internal events first
         entry_events = self._collect_new_entry_events(symbol, signal_idx, fill_idx, fill_bar, fill_ts, funding_window)
         
@@ -2184,101 +2171,14 @@ class BacktestEngine:
                 except (ValueError, TypeError):
                     pass
         
-        # Filter by module order: ORACLE → TREND → RANGE → SQUEEZE → NEUTRAL_Probe
-        # ORACLE has highest priority (for validation/testing only)
-        module_order = ['ORACLE', 'TREND', 'RANGE', 'SQUEEZE', 'NEUTRAL_Probe']
-        
-        for module in module_order:
-            for signal in list(pending_signals):  # Use list() to avoid modification during iteration
-                if signal.module == module:
-                    # ORACLE signals bypass all checks (confirmation, false break, etc.)
-                    if module == 'ORACLE':
-                        # Create entry event immediately for ORACLE
-                        events.append(OrderEvent(
-                            event_type='ORACLE_ENTRY',
-                            symbol=symbol,
-                            module='ORACLE',
-                            priority=1,
-                            signal_ts=signal.signal_ts,
-                            side=signal.side
-                        ))
-                        self._profile_counts['events_collected'] += 1
-                        break  # Only one ORACLE signal at a time
-                    if module == 'SQUEEZE':
-                        df_squeeze = self.symbol_data[symbol]
-                        current_idx = None
-                        if hasattr(self, 'symbol_ts_to_idx') and symbol in self.symbol_ts_to_idx:
-                            current_idx = self.symbol_ts_to_idx[symbol].get(fill_ts, None)
-                        if current_idx is None:
-                            current_idx = fill_idx
-                        # Strategy-specific false break check removed from engine core
-                        # Oracle signals don't use false break checks
-                        if module != 'ORACLE':
-                            raise NotImplementedError(
-                                "Strategy-specific false break checks not available in engine core. "
-                                "Use oracle_mode for validation."
-                            )
-                    # Check confirmation for TREND signals
-                    if module == 'TREND' and hasattr(signal, 'confirmation_bars'):
-                        # Get dataframe for this symbol
-                        df_trend = self.symbol_data[symbol]
-                        # Ensure fill_idx and signal_bar_idx are scalars (not Series)
-                        fill_idx_scalar = int(fill_idx) if hasattr(fill_idx, '__iter__') and not isinstance(fill_idx, str) else fill_idx
-                        signal_bar_idx_scalar = int(signal.signal_bar_idx) if hasattr(signal.signal_bar_idx, '__iter__') and not isinstance(signal.signal_bar_idx, str) else signal.signal_bar_idx
-                        
-                        # Use fill_idx (current bar t+1) for confirmation check, not signal_idx (signal bar t)
-                        # IMPORTANT: fill_idx should be signal.signal_bar_idx + 1 (next bar after signal)
-                        # If fill_idx == signal.signal_bar_idx, we're checking the same bar (wrong!)
-                        if fill_idx_scalar <= signal_bar_idx_scalar:
-                            continue  # Not enough bars have passed yet
-                        
-                        # Check if enough bars have passed for confirmation
-                        bars_since_signal = fill_idx_scalar - signal_bar_idx_scalar
-                        confirmation_bars_scalar = int(signal.confirmation_bars) if hasattr(signal.confirmation_bars, '__iter__') and not isinstance(signal.confirmation_bars, str) else signal.confirmation_bars
-                        if bars_since_signal < confirmation_bars_scalar:
-                            continue  # Not enough bars have passed yet (e.g., BTC needs 2 bars)
-                        
-                        # Strategy-specific confirmation check removed from engine core
-                        # Oracle signals don't use confirmation checks
-                        if module != 'ORACLE':
-                            raise NotImplementedError(
-                                "Strategy-specific confirmation checks not available in engine core. "
-                                "Use oracle_mode for validation."
-                            )
-                        # Oracle signals are always confirmed
-                        confirmed = True
-                    
-                    # Create entry event
-                    event_type_map = {
-                        'ORACLE': 'ORACLE_ENTRY',
-                        'TREND': 'TREND_ENTRY',
-                        'RANGE': 'RANGE_ENTRY',
-                        'SQUEEZE': 'SQUEEZE_NEW',
-                        'NEUTRAL_Probe': 'NEUTRAL_ENTRY'
-                    }
-                    
-                    # ORACLE signals bypass confirmation and other checks
-                    if module == 'ORACLE':
-                        # Oracle signals are always ready (no confirmation needed)
-                        pass
-                    
-                    events.append(OrderEvent(
-                        event_type=event_type_map.get(module, 'TREND_ENTRY'),
-                        symbol=symbol,
-                        module=module,
-                        priority=1 if module == 'ORACLE' else (3 if module == 'TREND' else (4 if module == 'RANGE' else (5 if module == 'SQUEEZE' else 6))),
-                        signal_ts=signal.signal_ts,
-                        side=signal.side
-                    ))
-                    self._profile_counts['events_collected'] += 1
-                    # DO NOT remove signal here - it needs to remain in pending_signals for execute_entry()
-                    # The signal will be removed in execute_entry() after successful execution or failure
-                    break  # Only one signal per module
-        
+        # Model-1: Only ORACLE signals are supported
+        # ORACLE signals are handled above with early return (bypass all checks)
+        # Strategy-specific modules (TREND, RANGE, SQUEEZE, NEUTRAL_PROBE) are not supported
+        # Non-ORACLE signals in pending_signals are ignored
         return events
     
     def collect_trail_events(self, symbol: str, fill_bar: pd.Series, fill_ts: pd.Timestamp) -> List[OrderEvent]:
-        """Collect trailing stop events (tighten only)"""
+        """Collect trailing stop events (tighten only) - Generic for all positions"""
         events = []
         
         if symbol not in self.portfolio.positions:
@@ -2286,26 +2186,14 @@ class BacktestEngine:
         
         pos = self.portfolio.positions[symbol]
         
-        # Only trail TREND positions (RANGE has time stops)
-        if pos.module == 'TREND':
-            events.append(OrderEvent(
-                event_type='TRAIL',
-                symbol=symbol,
-                module=pos.module,
-                priority=7,
-                signal_ts=pos.entry_ts
-            ))
-        elif pos.module == 'SQUEEZE':
-            # Check if trailing is enabled for SQUEEZE
-            enable_squeeze_trailing = False  # Default, strategy-specific param not in base_params.json
-            if enable_squeeze_trailing is None or enable_squeeze_trailing:
-                events.append(OrderEvent(
-                    event_type='TRAIL',
-                    symbol=symbol,
-                    module=pos.module,
-                    priority=7,
-                    signal_ts=pos.entry_ts
-                ))
+        # Generic trailing for all positions (Model-1: no module-specific logic)
+        events.append(OrderEvent(
+            event_type='TRAIL',
+            symbol=symbol,
+            module=pos.module,
+            priority=7,
+            signal_ts=pos.entry_ts
+        ))
         
         return events
     
@@ -2443,12 +2331,6 @@ class BacktestEngine:
             
             if event.event_type == 'STOP':
                 self.execute_stop(symbol, fill_bar, fill_ts)
-            elif event.event_type == 'SQUEEZE_TP1':
-                self.execute_squeeze_tp1(symbol, fill_bar, fill_ts)
-            elif event.event_type == 'SQUEEZE_VOL_EXIT':
-                self.execute_squeeze_vol_exit(symbol, fill_bar, fill_ts)
-            elif event.event_type == 'SQUEEZE_ENTRY':
-                self.execute_squeeze_entry(event.order_id, fill_bar, fill_ts)
             elif event.event_type == 'ORACLE_ENTRY':
                 # ORACLE signals bypass all filters and go directly to execute_entry
                 debug_oracle = self.params.get('general', 'debug_oracle_flow', default=False)
@@ -2458,9 +2340,8 @@ class BacktestEngine:
                 self._profile_counts['events_executed'] += 1
                 if debug_oracle:
                     print(f"[ORACLE DEBUG] execute_entry returned. Trades count: {len(self.trades)}, Fills count: {len(self.fills)}")
-            elif event.event_type in ['TREND_ENTRY', 'RANGE_ENTRY', 'SQUEEZE_NEW', 'NEUTRAL_ENTRY']:
-                self.execute_entry(event, fill_bar, fill_ts)
-                self._profile_counts['events_executed'] += 1
+            # Note: Strategy-specific event types (TREND_ENTRY, RANGE_ENTRY, SQUEEZE_ENTRY, etc.) 
+            # have been removed in Model-1. Only ORACLE_ENTRY is supported.
             elif event.event_type == 'TRAIL':
                 self.execute_trail(symbol, fill_bar, fill_ts)
             elif event.event_type == 'TTL':

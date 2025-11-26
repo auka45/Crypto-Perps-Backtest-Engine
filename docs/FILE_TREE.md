@@ -64,6 +64,11 @@ engine_core/
 │   │   ├── __init__.py
 │   │   └── oracle.py                  # Oracle module (validation only)
 │   │
+│   ├── archive/
+│   │   ├── __init__.py                 # Archive namespace (reference only)
+│   │   ├── strategy_event_collectors.py # Strategy-specific event collectors (archived)
+│   │   └── strategy_executors.py       # Strategy-specific executors (archived)
+│   │
 │   └── forensics/
 │       ├── __init__.py
 │       ├── deep_dive_run.py           # Forensic analysis logic
